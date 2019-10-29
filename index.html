@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Abstract Symbol Generator</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body style='background-color: #0d234b'>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 style="color: white;">Abstract Symbol Generator</h2>
+                <canvas id="myCanvas" width="300" height="300" style="border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas>
+                <br><br>
+                <form class="col-sm-6">
+                    <label for="maxObjects" style="color: white;">Max Objects</label>
+                    <input type="number" id="maxObjects" min="1" max="10" placeholder="Max objects" value="2">
+                    <br><br>
+                    <label for="complexity" style="color: white;">Complexity</label>
+                    <input type="number" id="complexity" min="3" max="20" placeholder="Complexity" value="4">
+                    <br><br>
+                    <label for="mirrorHorizontally" style="color: white;">Mirror Horizontally</label>
+                    <input type="checkbox" id="mirrorHorizontally">
+                    <br><br>
+                    <label for="mirrorVertically" style="color: white;">Mirror Vertically</label>
+                    <input type="checkbox" id="mirrorVertically">
+                    <br><br>
+                    <label for="generateBall" style="color: white;">Generate Ball</label>
+                    <input type="checkbox" id="generateBall">
+                    <br><br>
+                    <button class="btn btn-light" onclick='doEverything();'>REFRESH!</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+
+        doEverything();
+
+        function doEverything() {
+            // Initial variables
+            var maxObjects = parseInt(document.getElementById('maxObjects').value);
+            var complexity = parseInt(document.getElementById('complexity').value);
+            var mirrorHorizontally = document.getElementById('mirrorHorizontally').checked;
+            var mirrorVertically = document.getElementById('mirrorVertically').checked;
+            var generateBall = document.getElementById('generateBall').checked;
+
+            ctx.beginPath();
+            ctx.fillStyle = "rgba(" + getRand(0, 200) + "," + getRand(0, 200) + "," + getRand(0, 200) + ")";
+            ctx.fillRect(0, 0, c.width, c.height);
+
+            var objects = new Array();
+
+            for (let obj = 0; obj < maxObjects; obj++) {
+                var objcoords = new Array();
+                for (let i = 0; i < complexity; i++) {
+                    objcoords[i] = {
+                        'x': getRand(0, c.width),
+                        'y': getRand(0, c.height)
+                    };
+                }
+                objects.push(objcoords);
+            }
+
+            for (var obj in objects) {
+                drawCoords(objects[obj]);
+                if (mirrorHorizontally)
+                    drawCoords(invertHorizontal(objects[obj]));
+
+                if (mirrorVertically)
+                    drawCoords(invertVertical(objects[obj]));
+
+                drawCoords(invertHorizontal(objects[obj]));
+            }
+
+            if (generateBall) {
+                ctx.beginPath();
+                ctx.arc(c.width / 2, c.height / 2, getRand(10, 50), 0, 2 * Math.PI);
+                ctx.fillStyle = "white";
+                ctx.fill();
+            }
+        }
+
+        function getRand(min, max) {
+            return Math.floor(Math.random() * max) + min;
+        }
+
+        function drawCoords(coords) {
+            ctx.beginPath();
+            ctx.moveTo(coords[0].x, coords[0].y);
+            for (let i = 0; i < parseInt(complexity.value); i++) {
+                ctx.lineTo(coords[i].x, coords[i].y);
+            }
+            ctx.lineTo(coords[0].x, coords[0].y);
+            ctx.fillStyle = "white";
+            ctx.fill();
+        }
+
+        function invertHorizontal(coords) {
+            for (let i = 0; i < coords.length; i++) {
+                coords[i].x = -(coords[i].x) + c.width;
+            }
+            return coords;
+        }
+
+        function invertVertical(coords) {
+            for (let i = 0; i < coords.length; i++) {
+                coords[i].y = -(coords[i].y) + c.height;
+            }
+            return coords;
+        }
+    </script>
+
+</body>
+
+</html>
