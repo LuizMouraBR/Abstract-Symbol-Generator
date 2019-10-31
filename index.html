@@ -75,7 +75,8 @@
                 if (mirrorVertically)
                     drawCoords(invertVertical(objects[obj]));
 
-                drawCoords(invertHorizontal(objects[obj]));
+                if (mirrorHorizontally)
+                    drawCoords(invertHorizontal(objects[obj]));
             }
 
             if (generateBall) {
