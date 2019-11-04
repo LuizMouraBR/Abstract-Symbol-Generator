@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Starfield Generator</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body style='background-color: #000000'>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 style="color: white;">Starfield Generator</h2>
+                <canvas id="myCanvas" width="600" height="600" style="border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas>
+                <br><br>
+                <form class="col-sm-6">
+                    <label for="maxStars" style="color: white;">Stars amount</label>
+                    <input type="number" id="maxStars" min="1" max="1000000" placeholder="Stars amount" value="200">
+                    <br><br>
+
+                    <label for="includeConstelations" style="color: white;">Constelations</label>
+                    <input type="checkbox" id="includeConstelations">
+                    <br><br>
+                    <label for="constelationProbability" style="color: white;">Constelation Probability</label>
+                    <input type="number" id="constelationProbability" min="1" max="100" placeholder="Constelation Probability" value="4">
+                    <br><br>
+                    <button type="button" class="btn btn-light" onclick='doEverything();'>REFRESH!</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+
+
+
+        doEverything();
+
+        function doEverything() {
+            // Initial variables
+            var maxStars = parseInt(document.getElementById('maxStars').value);
+            var constelationProbability = parseInt(document.getElementById('constelationProbability').value);
+
+            ctx.clearRect(0, 0, c.width, c.height);
+
+            var objects = new Array();
+
+            var constelationAmount = getRand(2, 8);
+
+            for (let obj = 0; obj < maxStars; obj++) {
+                var objcoords = new Array();
+
+                constelationAmount--;
+
+                if (constelationAmount < 0)
+                    constelationAmount = getRand(0, 100) < constelationProbability ? getRand(2, 8) : 0;
+
+                objcoords = {
+                    'id': obj,
+                    'x': getRand(0, c.width),
+                    'y': getRand(0, c.height),
+                    'color': "rgba(" + getRand(200, 255) + ", " + getRand(200, 255) + ", " + getRand(200, 255) + ", 1)",
+                    'constelation': constelationAmount > 0 ? true : false
+                };
+                objects.push(objcoords);
+            }
+
+            for (var obj in objects) {
+                drawCoords(objects[obj], objects);
+            }
+        }
+
+        function getRand(min, max) {
+            return Math.floor(Math.random() * max) + min;
+        }
+
+        function drawCoords(coords, objects) {
+            var includeConstelations = document.getElementById('includeConstelations').checked;
+
+            var starsize = getRand(20, 120) / 100;
+
+            ctx.beginPath();
+            ctx.arc(coords.x, coords.y, starsize, 0, 2 * Math.PI);
+            ctx.fillStyle = coords.color;
+            ctx.fill();
+
+            if (includeConstelations) {
+                var prevCoordsId = coords.id == 0 ? coords.id : coords.id - 1;
+                if (objects[prevCoordsId].constelation) {
+                    ctx.beginPath();
+                    ctx.moveTo(coords.x, coords.y);
+                    ctx.lineTo(objects[prevCoordsId].x, objects[prevCoordsId].y);
+                    ctx.strokeStyle = "rgba(255,255,255,0.3)";
+                    ctx.stroke();
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>
